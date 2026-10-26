@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Field Guide to Growing Up</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1d2540">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+*{box-sizing:border-box}
+:root{--ink:#1d2540;--paper:#f6f8fb;--sun:#ffc43d}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 ui-rounded,"SF Pro Rounded",Nunito,"Segoe UI",system-ui,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+main{max-width:560px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+button,textarea,input{font:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+h1{font-size:2.1rem;line-height:1.1;margin:0 0 .5rem;font-weight:800}
+.pad{padding:1.5rem 1.2rem}
+.tile{display:block;width:100%;text-align:left;border:0;border-radius:22px;padding:1.2rem;margin:.8rem 0;color:#fff;background:var(--c)}
+.tile h2{margin:0 0 .2rem;font-size:1.3rem}
+.tile p{margin:0}
+.tile.lock{background:#dfe4ee;color:#566077;cursor:default}
+.link{background:none;border:0;color:var(--ink);text-decoration:underline;padding:.6rem 0}
+.lesson{flex:1;display:flex;flex-direction:column;background:var(--c);color:#fff;padding:1rem 1.2rem}
+.top{display:flex;justify-content:space-between;gap:.5rem;margin-bottom:.8rem}
+.top button{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:14px;padding:.4rem .8rem}
+.bar{height:6px;background:rgba(255,255,255,.3);border-radius:3px}
+.bar i{display:block;height:100%;background:#fff;border-radius:3px;transition:width .3s}
+.card{flex:1;display:flex;flex-direction:column;justify-content:center;padding:1rem 0}
+.card h2{font-size:1.9rem;line-height:1.15;margin:0 0 1rem}
+.card p{font-size:1.15rem;margin:0 0 .8rem}
+.card textarea{width:100%;border:0;border-radius:14px;padding:.8rem;min-height:5rem;color:var(--ink)}
+.row{display:flex;gap:.6rem;padding:.6rem 0}
+.btn{flex:1;border:0;border-radius:16px;padding:.9rem;font-weight:700;background:#fff;color:var(--ink)}
+.btn.ghost{background:rgba(255,255,255,.2);color:#fff}
+.btn:disabled{opacity:.45}
+.fb{background:rgba(255,255,255,.18);border-radius:14px;padding:.8rem 1rem;margin-top:.6rem}
+.flag{align-self:flex-start;background:none;border:2px solid rgba(255,255,255,.7);color:#fff;border-radius:14px;padding:.35rem .8rem;margin-top:.4rem}
+.flag[aria-pressed=true]{background:#fff;color:var(--ink)}
+#sheet{position:fixed;inset:0;background:rgba(29,37,64,.6);display:flex;align-items:flex-end;justify-content:center}
+#sheet[hidden]{display:none}
+#sheet div{background:#fff;color:var(--ink);border-radius:24px 24px 0 0;padding:1.4rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom));width:100%;max-width:560px}
+#sheet .btn{background:var(--ink);color:#fff}#sheet .btn.ghost{background:#e9edf5;color:var(--ink)}
+.par li{margin:.4rem 0}
+input.pin{font-size:1.4rem;letter-spacing:.4rem;width:8rem;padding:.4rem .6rem;border:2px solid var(--ink);border-radius:12px}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style></head>
+<body><main id="app"></main><div id="sheet" hidden></div>
+<script>
+const M=[
+{id:'p',t:'What is puberty?',d:'How bodies change as kids grow up',c:'#0e7c7b',
+cards:[
+['Puberty is your body growing up','Puberty is when a kid\'s body changes into a grown-up\'s body. It happens to everyone, and it takes several years.'],
+['Everyone has their own schedule','It usually starts somewhere between ages 8 and 14. Some kids start early and some start late. Both are normal, and neither one means anything is wrong.'],
+['What changes for everyone','You grow fast in spurts. You sweat more and get body odor, so deodorant and showers help. Hair grows in new places. Skin gets oilier and pimples can show up. Feelings can get bigger and moods can swing.'],
+['What often changes for boys','The penis and testicles grow, the voice gets deeper (it can crack along the way), and facial hair starts. Erections can happen for no reason. Wet dreams can happen too: semen comes out during sleep. That is not pee, and it is normal.'],
+['What often changes for girls','Breasts grow, hips get wider, and periods start. A period is when blood leaves the body through the vagina for a few days. It happens about once a month, and it is a healthy sign that the body is growing up.'],
+['Feelings are part of it','Crushes, awkward moments, and mood swings are all common. If something feels confusing or worrying, you can always talk to a grown-up you trust.']],
+qs:[
+['If your friends change before you do, something is wrong with you.',0,'Bodies change on different schedules. Early or late is normal.'],
+['Erections and wet dreams are normal for boys.',1,'They are a normal part of puberty, and nothing to be embarrassed about.'],
+['Periods are a normal, healthy part of growing up.',1,'They are. Teasing someone about a period is never okay.'],
+['Everyone\'s voice and height change at exactly the same age.',0,'Everyone is on their own timeline.']],
+talk:['What surprised you most?','Was anything confusing or worrying?','What do you want to know more about?']},
+{id:'c',t:'Bodies, boundaries & consent',d:'Your body, your choices, and respecting others',c:'#5a49e0',
+cards:[
+['Your body is yours','You get to decide who touches you and how. That includes hugs, high-fives, tickling, and wrestling. You can say no, even to people you like and even to family.'],
+['Ask first, every time','Before you hug, touch, or take a photo of someone, ask. A yes has to be a real yes. If someone feels pressured or stays quiet, it is not a yes.'],
+['When someone says no','Stop right away. No arguing. A spoken no, going quiet, or pulling away all mean stop. Respecting a no is how you show you are a good friend.'],
+['Surprises vs. secrets','A surprise is happy and ends soon, like a birthday present. A secret about touching, or one that makes you feel scared, sad, or confused, is one to tell a trusted adult about, even if someone told you not to. You will not be in trouble.'],
+['Your trusted adults','Pick three grown-ups you could tell anything. If the first one does not help, tell the next one. Write their names here if you like. They stay on this device.','inp'],
+['Photos and the internet','Never ask for or share pictures of anyone\'s private body parts. Ask before posting a photo of a friend. If something upsets you online, or someone asks for private pictures, close it and tell a trusted adult. You will not be in trouble.']],
+qs:[
+['You can say no to a hug, even from someone you love.',1,'Your body is yours. Saying no is always allowed.'],
+['If a friend says no to wrestling but is laughing, you can keep going.',0,'Stop and ask. A no means stop, even if it seems like a joke.'],
+['If someone asks you to keep a touching secret, you should keep it.',0,'Tell a trusted adult. You will not be in trouble.']],
+talk:['When might it be hard to say no? What could you say?','Who are your trusted adults?','What would you do if you saw something upsetting online?']},
+{id:'r',t:'How babies are made',d:'Coming soon',lock:1},
+{id:'o',t:'Staying safe online',d:'Coming soon',lock:1}];
+let S;try{S=JSON.parse(localStorage.getItem('fg')||'{}')}catch(e){S={}}
+S.done=S.done||{};S.flags=S.flags||{};
+const save=()=>{try{localStorage.setItem('fg',JSON.stringify(S))}catch(e){}};
+const mod=id=>M.find(m=>m.id===id);
+let view={n:'h'};
+const $=s=>document.querySelector(s);
+function render(){
+ const a=$('#app');
+ if(view.n==='h'){a.innerHTML='<div class="pad"><h1>Field Guide to Growing Up</h1><p>Explore at your own pace. Skip anything, any time.</p>'+M.map(m=>m.lock?`<div class="tile lock"><h2>${m.t}</h2><p>${m.d}</p></div>`:`<button class="tile" style="--c:${m.c}" data-a="open" data-v="${m.id}"><h2>${m.t}${S.done[m.id]?' ✓':''}</h2><p>${m.d}</p></button>`).join('')+'<button class="link" data-a="par">For parents</button></div>'}
+ else if(view.n==='l'){
+  const m=mod(view.id),n=m.cards.length+m.qs.length,i=view.i,isC=i<m.cards.length,k=m.id+':'+i;
+  let h=`<div class="lesson" style="--c:${m.c}"><div class="top"><button data-a="home">Home</button><button data-a="worry">I'm confused or worried</button></div><div class="bar"><i style="width:${(i+1)/n*100}%"></i></div><div class="card">`;
+  if(isC){const c=m.cards[i];h+=`<h2>${c[0]}</h2><p>${c[1]}</p>`+(c[2]?'<textarea id="ta" aria-label="My trusted adults" placeholder="Three names"></textarea>':'')+`<button class="flag" data-a="flag" aria-pressed="${!!S.flags[k]}">I want to talk about this</button>`}
+  else{const q=m.qs[i-m.cards.length];h+=`<h2>Myth or fact?</h2><p>${q[0]}</p><div class="row"><button class="btn" data-a="ans" data-v="m" ${view.a?'disabled':''}>Myth</button><button class="btn" data-a="ans" data-v="f" ${view.a?'disabled':''}>Fact</button></div>`+(view.a?`<div class="fb" role="status"><b>${(view.a==='f')===!!q[1]?'Right!':'Not quite.'}</b> ${q[2]}</div>`:'')}
+  h+=`</div><div class="row"><button class="btn ghost" data-a="prev" ${i?'':'disabled'}>Back</button><button class="btn" data-a="next" ${!isC&&!view.a?'disabled':''}>${i+1>=n?'Finish':'Next'}</button></div></div>`;
+  a.innerHTML=h;const t=$('#ta');if(t)t.value=S.trusted||'';
+ }else{
+  let h='<div class="pad par"><button class="link" data-a="home">Back</button><h1>For parents</h1>';
+  if(!S.pin)h+='<p>Set a 4-digit PIN. It keeps this area out of casual reach; it is not strong security.</p><input class="pin" id="pin" inputmode="numeric" maxlength="4" type="password" aria-label="New PIN"> <button class="btn" style="flex:none;background:var(--ink);color:#fff" data-a="setpin">Save PIN</button>';
+  else if(!view.ok)h+=`<p>Enter your PIN.</p><input class="pin" id="pin" inputmode="numeric" maxlength="4" type="password" aria-label="PIN"> <button class="btn" style="flex:none;background:var(--ink);color:#fff" data-a="unlock">Open</button><p>${view.msg||''}</p>`;
+  else{const f=Object.values(S.flags);h+='<h2>He wants to talk about</h2>'+(f.length?'<ul>'+f.map(x=>`<li>${x}</li>`).join('')+'</ul>':'<p>Nothing flagged yet.</p>')+'<h2>Conversation starters</h2>'+M.filter(m=>m.talk).map(m=>`<h3>${m.t}</h3><ul>${m.talk.map(x=>`<li>${x}</li>`).join('')}</ul>`).join('')+'<p><button class="link" data-a="reset">Reset progress and flags</button></p>'}
+  a.innerHTML=h+'</div>'}
+}
+function act(a,v){
+ if(a==='open')view={n:'l',id:v,i:0};
+ else if(a==='home')view={n:'h'};
+ else if(a==='par')view={n:'p'};
+ else if(a==='prev'){view.i--;view.a=null}
+ else if(a==='next'){const m=mod(view.id);if(view.i+1>=m.cards.length+m.qs.length){S.done[m.id]=1;save();view={n:'h'}}else{view.i++;view.a=null}}
+ else if(a==='ans')view.a=v;
+ else if(a==='flag'){const m=mod(view.id),k=m.id+':'+view.i;if(S.flags[k])delete S.flags[k];else S.flags[k]=m.t+': "'+m.cards[view.i][0]+'"';save()}
+ else if(a==='worry'){const s=$('#sheet');s.hidden=false;s.innerHTML='<div role="dialog" aria-label="Confused or worried"><h2>That\'s okay</h2><p>Lots of kids feel confused or worried about this stuff. You can skip anything, any time. The best next step is to talk with a grown-up you trust. You will not be in trouble for asking.</p><div class="row"><button class="btn ghost" data-a="close">Close</button><button class="btn" data-a="wflag">Mark to talk about</button></div></div>';return}
+ else if(a==='wflag'){const m=mod(view.id);S.flags['w'+Date.now()]='Felt confused or worried during "'+m.t+'"';save();$('#sheet').hidden=true;return}
+ else if(a==='close'){$('#sheet').hidden=true;return}
+ else if(a==='setpin'){const p=$('#pin').value;if(/^\d{4}$/.test(p)){S.pin=p;save();view.ok=true}}
+ else if(a==='unlock'){if($('#pin').value===S.pin)view.ok=true;else view.msg='That PIN does not match.'}
+ else if(a==='reset'){if(confirm('Reset all progress and flags?')){S.done={};S.flags={};save()}}
+ render()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)act(b.dataset.a,b.dataset.v)});
+document.addEventListener('input',e=>{if(e.target.id==='ta'){S.trusted=e.target.value;save()}});
+render();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
