@@ -44,6 +44,12 @@ h1{font-size:2.1rem;line-height:1.1;margin:0 0 .5rem;font-weight:800}
 #sheet .btn{background:var(--ink);color:#fff}#sheet .btn.ghost{background:#e9edf5;color:var(--ink)}
 .par li{margin:.4rem 0}
 input.pin{font-size:1.4rem;letter-spacing:.4rem;width:8rem;padding:.4rem .6rem;border:2px solid var(--ink);border-radius:12px}
+.sw{background:#fff;color:var(--ink);border-radius:20px;padding:1.4rem 1.2rem;font-size:1.3rem;font-weight:700;touch-action:pan-y;user-select:none;margin-bottom:.8rem;cursor:grab}
+.tr{margin:.5rem 0;font-size:.95rem}.tr small{opacity:.8}.tr:not(.on) span{opacity:.7}
+.tk{position:relative;height:10px;background:rgba(255,255,255,.2);border-radius:5px;margin-top:.2rem}
+.tk i{position:absolute;top:0;height:100%;background:rgba(255,255,255,.5);border-radius:5px}
+.tr.on .tk i{background:#fff}
+.tk::after{content:"";position:absolute;top:-4px;bottom:-4px;left:calc(var(--p) * 1%);width:3px;background:var(--sun);border-radius:2px}
 @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
 </style></head>
 <body><main id="app"></main><div id="sheet" hidden></div>
@@ -53,6 +59,7 @@ const M=[
 cards:[
 ['Puberty is your body growing up','Puberty is when a kid\'s body changes into a grown-up\'s body. It happens to everyone, and it takes several years.'],
 ['Everyone has their own schedule','It usually starts somewhere between ages 8 and 14. Some kids start early and some start late. Both are normal, and neither one means anything is wrong.'],
+['Slide through the ages','Move the slider to see when changes often happen. The bright bars are the usual ranges. They are approximate, and plenty of healthy kids fall outside them.','tl'],
 ['What changes for everyone','You grow fast in spurts. You sweat more and get body odor, so deodorant and showers help. Hair grows in new places. Skin gets oilier and pimples can show up. Feelings can get bigger and moods can swing.'],
 ['What often changes for boys','The penis and testicles grow, the voice gets deeper (it can crack along the way), and facial hair starts. Erections can happen for no reason. Wet dreams can happen too: semen comes out during sleep. That is not pee, and it is normal.'],
 ['What often changes for girls','Breasts grow, hips get wider, and periods start. A period is when blood leaves the body through the vagina for a few days. It happens about once a month, and it is a healthy sign that the body is growing up.'],
@@ -61,7 +68,9 @@ qs:[
 ['If your friends change before you do, something is wrong with you.',0,'Bodies change on different schedules. Early or late is normal.'],
 ['Erections and wet dreams are normal for boys.',1,'They are a normal part of puberty, and nothing to be embarrassed about.'],
 ['Periods are a normal, healthy part of growing up.',1,'They are. Teasing someone about a period is never okay.'],
-['Everyone\'s voice and height change at exactly the same age.',0,'Everyone is on their own timeline.']],
+['Everyone\'s voice and height change at exactly the same age.',0,'Everyone is on their own timeline.'],
+['Pimples show up because you are dirty.',0,'Hormones make skin oilier. Washing helps, but dirt is not the cause.'],
+['Sweating more during puberty is normal.',1,'Sweat glands get more active, so deodorant and showers help.']],
 talk:['What surprised you most?','Was anything confusing or worrying?','What do you want to know more about?']},
 {id:'c',t:'Bodies, boundaries & consent',d:'Your body, your choices, and respecting others',c:'#5a49e0',
 cards:[
@@ -90,8 +99,8 @@ function render(){
  else if(view.n==='l'){
   const m=mod(view.id),n=m.cards.length+m.qs.length,i=view.i,isC=i<m.cards.length,k=m.id+':'+i;
   let h=`<div class="lesson" style="--c:${m.c}"><div class="top"><button data-a="home">Home</button><button data-a="worry">I'm confused or worried</button></div><div class="bar"><i style="width:${(i+1)/n*100}%"></i></div><div class="card">`;
-  if(isC){const c=m.cards[i];h+=`<h2>${c[0]}</h2><p>${c[1]}</p>`+(c[2]?'<textarea id="ta" aria-label="My trusted adults" placeholder="Three names"></textarea>':'')+`<button class="flag" data-a="flag" aria-pressed="${!!S.flags[k]}">I want to talk about this</button>`}
-  else{const q=m.qs[i-m.cards.length];h+=`<h2>Myth or fact?</h2><p>${q[0]}</p><div class="row"><button class="btn" data-a="ans" data-v="m" ${view.a?'disabled':''}>Myth</button><button class="btn" data-a="ans" data-v="f" ${view.a?'disabled':''}>Fact</button></div>`+(view.a?`<div class="fb" role="status"><b>${(view.a==='f')===!!q[1]?'Right!':'Not quite.'}</b> ${q[2]}</div>`:'')}
+  if(isC){const c=m.cards[i];h+=`<h2>${c[0]}</h2><p>${c[1]}</p>`+(c[2]==='inp'?'<textarea id="ta" aria-label="My trusted adults" placeholder="Three names"></textarea>':c[2]==='tl'?tl(view.age||11):'')+`<button class="flag" data-a="flag" aria-pressed="${!!S.flags[k]}">I want to talk about this</button>`}
+  else{const q=m.qs[i-m.cards.length];h+=`<h2>Myth or fact?</h2><div class="sw">${q[0]}</div><p><small>Swipe the card left for myth and right for fact, or tap a button.</small></p><div class="row"><button class="btn" data-a="ans" data-v="m" ${view.a?'disabled':''}>Myth</button><button class="btn" data-a="ans" data-v="f" ${view.a?'disabled':''}>Fact</button></div>`+(view.a?`<div class="fb" role="status"><b>${(view.a==='f')===!!q[1]?'Right!':'Not quite.'}</b> ${q[2]}</div>`:'')}
   h+=`</div><div class="row"><button class="btn ghost" data-a="prev" ${i?'':'disabled'}>Back</button><button class="btn" data-a="next" ${!isC&&!view.a?'disabled':''}>${i+1>=n?'Finish':'Next'}</button></div></div>`;
   a.innerHTML=h;const t=$('#ta');if(t)t.value=S.trusted||'';
  }else{
@@ -117,7 +126,17 @@ function act(a,v){
  else if(a==='reset'){if(confirm('Reset all progress and flags?')){S.done={};S.flags={};save()}}
  render()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)act(b.dataset.a,b.dataset.v)});
-document.addEventListener('input',e=>{if(e.target.id==='ta'){S.trusted=e.target.value;save()}});
+const TL=[['Sweat and body odor','Everyone',8,14],['Hair in new places','Everyone',8,14],['Oily skin and pimples','Everyone',9,15],['Breasts start to grow','Girls',8,13],['Growth spurt','Girls',9,14],['First period','Girls',10,15],['Testicles and penis grow','Boys',9,14],['Growth spurt','Boys',11,16],['Voice gets deeper','Boys',12,16],['Facial hair starts','Boys',13,17]];
+const pos=a=>(a-8)/9*100;
+function tl(a){return `<p>Age <b id="tla">${a}</b></p><input id="tl" type="range" min="8" max="17" value="${a}" aria-label="Age" style="width:100%;accent-color:#fff"><div id="tlr" style="--p:${pos(a)}">`+TL.map(r=>`<div class="tr${a>=r[2]&&a<=r[3]?' on':''}" data-f="${r[2]}" data-t="${r[3]}"><span>${r[0]} <small>${r[1]}</small></span><div class="tk"><i style="left:${pos(r[2])}%;width:${pos(r[3])-pos(r[2])}%"></i></div></div>`).join('')+'</div>'}
+document.addEventListener('input',e=>{
+ if(e.target.id==='ta'){S.trusted=e.target.value;save()}
+ else if(e.target.id==='tl'){const a=+e.target.value;view.age=a;$('#tla').textContent=a;const r=$('#tlr');r.style.setProperty('--p',pos(a));r.querySelectorAll('.tr').forEach(x=>x.classList.toggle('on',a>=+x.dataset.f&&a<=+x.dataset.t))}});
+let sw=null,x0=0;
+document.addEventListener('pointerdown',e=>{const c=e.target.closest('.sw');if(c&&!view.a){sw=c;x0=e.clientX;c.setPointerCapture(e.pointerId)}});
+document.addEventListener('pointermove',e=>{if(sw){const d=e.clientX-x0;sw.style.transform=`translateX(${d}px) rotate(${d/25}deg)`}});
+document.addEventListener('pointerup',e=>{if(!sw)return;const d=e.clientX-x0,c=sw;sw=null;if(Math.abs(d)>90)act('ans',d>0?'f':'m');else c.style.transform=''});
+document.addEventListener('pointercancel',()=>{if(sw){sw.style.transform='';sw=null}});
 render();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
