@@ -50,6 +50,10 @@ input.pin{font-size:1.4rem;letter-spacing:.4rem;width:8rem;padding:.4rem .6rem;b
 .tk i{position:absolute;top:0;height:100%;background:rgba(255,255,255,.5);border-radius:5px}
 .tr.on .tk i{background:#fff}
 .tk::after{content:"";position:absolute;top:-4px;bottom:-4px;left:calc(var(--p) * 1%);width:3px;background:var(--sun);border-radius:2px}
+.dg{background:#fff;border-radius:18px;padding:.4rem;margin-bottom:.6rem}.dg svg{display:block;width:100%;max-height:46vh}
+.pt{cursor:pointer}.pt.sel{stroke:#ff9f1c;stroke-width:5}
+.chips{display:flex;flex-wrap:wrap;gap:.3rem}.chip{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:14px;padding:.35rem .75rem}.chip[aria-pressed=true]{background:#fff;color:var(--ink)}
+.pd{min-height:3.4rem;margin-top:.6rem}
 @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
 </style></head>
 <body><main id="app"></main><div id="sheet" hidden></div>
@@ -85,7 +89,27 @@ qs:[
 ['If a friend says no to wrestling but is laughing, you can keep going.',0,'Stop and ask. A no means stop, even if it seems like a joke.'],
 ['If someone asks you to keep a touching secret, you should keep it.',0,'Tell a trusted adult. You will not be in trouble.']],
 talk:['When might it be hard to say no? What could you say?','Who are your trusted adults?','What would you do if you saw something upsetting online?']},
-{id:'r',t:'How babies are made',d:'Coming soon',lock:1},
+{id:'r',t:'How babies are made',d:'Sperm, eggs, pregnancy, and birth',c:'#a62f5a',
+cards:[
+['Where babies come from','A baby starts when a sperm cell from a male body joins an egg cell from a female body. It takes both. These cells are so tiny that you need a microscope to see them.'],
+['Bodies that make sperm','Testicles make sperm, and they start making it during puberty. Sperm leave the body in a fluid called semen, which comes out through the penis.'],
+['See it: male body parts','Tap a part to see what it does. This is a side view, as if the body were cut in half.','an','m'],
+['Bodies that hold eggs','People born female have eggs stored in their ovaries. During puberty, about once a month, an ovary lets go of one egg. It travels through a tube toward the uterus, a strong, pear-shaped organ where a baby can grow.'],
+['See it: female body parts','Tap a part to see what it does. This is a front view.','an','f'],
+['Where periods fit in','Each month the uterus builds up a soft lining, just in case an egg joins with a sperm. If that does not happen, the lining leaves the body. That is a period.'],
+['How sperm and egg meet','For a sperm to reach an egg inside a body, two adults can have sex. The penis goes inside the vagina, and semen with sperm comes out. Adults can also have sex to feel close, not only to have a baby. Some people need a doctor\'s help to get a sperm and an egg together.'],
+['Sex is for adults, with consent','Sex is only okay between adults who both clearly and freely say yes. It is never for kids. No adult or older kid should ever touch a kid\'s private parts or ask a kid to do sex things. If that happens, it is never the kid\'s fault. Tell a trusted adult. You will not be in trouble.'],
+['Growing a baby','When a sperm joins an egg, it can grow into a baby inside the uterus. Pregnancy lasts about nine months. The baby gets food and oxygen through a cord that connects it to the person carrying it. Your belly button is where your cord was.'],
+['Being born','Many babies are born through the vagina. Some are born by C-section, when doctors lift the baby out through an opening in the belly. Both are normal ways to be born.'],
+['Many kinds of families','Families begin in lots of ways: birth, adoption, foster care, or with help from doctors. A family can have one parent, two parents, grandparents, or other caring adults. What makes a family is love and care.']],
+qs:[
+['A baby starts when a sperm and an egg join.',1,'It takes both cells to start a baby.'],
+['Babies grow in the stomach.',0,'Babies grow in the uterus. The stomach is for digesting food.'],
+['A period is when the lining of the uterus leaves the body.',1,'Yes. It is a normal sign that the body is growing up.'],
+['Sex is only for adults.',1,'Right. It is never for kids, and it always needs a clear yes from both adults.'],
+['All babies are born the same way.',0,'Some are born through the vagina and some by C-section. Both are normal.'],
+['Only families with a mom and a dad are real families.',0,'Families come in many shapes. Love and care are what make a family.']],
+talk:['What part was new to you?','What questions do you have that the app did not answer?','How did the part about how sperm and egg meet feel to read?']},
 {id:'o',t:'Staying safe online',d:'Coming soon',lock:1}];
 let S;try{S=JSON.parse(localStorage.getItem('fg')||'{}')}catch(e){S={}}
 S.done=S.done||{};S.flags=S.flags||{};
@@ -99,10 +123,10 @@ function render(){
  else if(view.n==='l'){
   const m=mod(view.id),n=m.cards.length+m.qs.length,i=view.i,isC=i<m.cards.length,k=m.id+':'+i;
   let h=`<div class="lesson" style="--c:${m.c}"><div class="top"><button data-a="home">Home</button><button data-a="worry">I'm confused or worried</button></div><div class="bar"><i style="width:${(i+1)/n*100}%"></i></div><div class="card">`;
-  if(isC){const c=m.cards[i];h+=`<h2>${c[0]}</h2><p>${c[1]}</p>`+(c[2]==='inp'?'<textarea id="ta" aria-label="My trusted adults" placeholder="Three names"></textarea>':c[2]==='tl'?tl(view.age||11):'')+`<button class="flag" data-a="flag" aria-pressed="${!!S.flags[k]}">I want to talk about this</button>`}
+  if(isC){const c=m.cards[i];h+=`<h2>${c[0]}</h2><p>${c[1]}</p>`+(c[2]==='inp'?'<textarea id="ta" aria-label="My trusted adults" placeholder="Three names"></textarea>':c[2]==='tl'?tl(view.age||11):c[2]==='an'?an(c[3]):'')+`<button class="flag" data-a="flag" aria-pressed="${!!S.flags[k]}">I want to talk about this</button>`}
   else{const q=m.qs[i-m.cards.length];h+=`<h2>Myth or fact?</h2><div class="sw">${q[0]}</div><p><small>Swipe the card left for myth and right for fact, or tap a button.</small></p><div class="row"><button class="btn" data-a="ans" data-v="m" ${view.a?'disabled':''}>Myth</button><button class="btn" data-a="ans" data-v="f" ${view.a?'disabled':''}>Fact</button></div>`+(view.a?`<div class="fb" role="status"><b>${(view.a==='f')===!!q[1]?'Right!':'Not quite.'}</b> ${q[2]}</div>`:'')}
   h+=`</div><div class="row"><button class="btn ghost" data-a="prev" ${i?'':'disabled'}>Back</button><button class="btn" data-a="next" ${!isC&&!view.a?'disabled':''}>${i+1>=n?'Finish':'Next'}</button></div></div>`;
-  a.innerHTML=h;const t=$('#ta');if(t)t.value=S.trusted||'';
+  a.innerHTML=h;const t=$('#ta');if(t)t.value=S.trusted||'';if(view.n==='l'&&view.pi===view.i&&view.part)document.querySelectorAll('.pt[data-v="'+view.part+'"]').forEach(e=>e.classList.add('sel'));
  }else{
   let h='<div class="pad par"><button class="link" data-a="home">Back</button><h1>For parents</h1>';
   if(!S.pin)h+='<p>Set a 4-digit PIN. It keeps this area out of casual reach; it is not strong security.</p><input class="pin" id="pin" inputmode="numeric" maxlength="4" type="password" aria-label="New PIN"> <button class="btn" style="flex:none;background:var(--ink);color:#fff" data-a="setpin">Save PIN</button>';
@@ -116,6 +140,7 @@ function act(a,v){
  else if(a==='par')view={n:'p'};
  else if(a==='prev'){view.i--;view.a=null}
  else if(a==='next'){const m=mod(view.id);if(view.i+1>=m.cards.length+m.qs.length){S.done[m.id]=1;save();view={n:'h'}}else{view.i++;view.a=null}}
+ else if(a==='part'){view.part=v;view.pi=view.i}
  else if(a==='ans')view.a=v;
  else if(a==='flag'){const m=mod(view.id),k=m.id+':'+view.i;if(S.flags[k])delete S.flags[k];else S.flags[k]=m.t+': "'+m.cards[view.i][0]+'"';save()}
  else if(a==='worry'){const s=$('#sheet');s.hidden=false;s.innerHTML='<div role="dialog" aria-label="Confused or worried"><h2>That\'s okay</h2><p>Lots of kids feel confused or worried about this stuff. You can skip anything, any time. The best next step is to talk with a grown-up you trust. You will not be in trouble for asking.</p><div class="row"><button class="btn ghost" data-a="close">Close</button><button class="btn" data-a="wflag">Mark to talk about</button></div></div>';return}
@@ -127,6 +152,10 @@ function act(a,v){
  render()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)act(b.dataset.a,b.dataset.v)});
 const TL=[['Sweat and body odor','Everyone',8,14],['Hair in new places','Everyone',8,14],['Oily skin and pimples','Everyone',9,15],['Breasts start to grow','Girls',8,13],['Growth spurt','Girls',9,14],['First period','Girls',10,15],['Testicles and penis grow','Boys',9,14],['Growth spurt','Boys',11,16],['Voice gets deeper','Boys',12,16],['Facial hair starts','Boys',13,17]];
+const AN={
+f:{s:`<svg viewBox="20 60 260 225" role="img" aria-label="Front view diagram of the female reproductive system"><path class="pt" data-a="part" data-v="vagina" d="M141 190 L135 275 L165 275 L159 190 Z" fill="#f0a5b9" stroke="#1d2540" stroke-width="2"/><path class="pt" data-a="part" data-v="uterus" d="M118 95 Q150 78 182 95 L192 125 Q178 160 160 174 L140 174 Q122 160 108 125 Z" fill="#e58aa5" stroke="#1d2540" stroke-width="2"/><rect class="pt" data-a="part" data-v="cervix" x="140" y="172" width="20" height="22" rx="7" fill="#c9577a" stroke="#1d2540" stroke-width="2"/><path class="pt" data-a="part" data-v="tube" d="M116 104 Q88 78 62 98" fill="none" stroke="#c9577a" stroke-width="8" stroke-linecap="round"/><path class="pt" data-a="part" data-v="tube" d="M184 104 Q212 78 238 98" fill="none" stroke="#c9577a" stroke-width="8" stroke-linecap="round"/><ellipse class="pt" data-a="part" data-v="ovary" cx="50" cy="110" rx="21" ry="15" fill="#f6c1d0" stroke="#1d2540" stroke-width="2"/><ellipse class="pt" data-a="part" data-v="ovary" cx="250" cy="110" rx="21" ry="15" fill="#f6c1d0" stroke="#1d2540" stroke-width="2"/></svg>`,p:{ovary:['Ovary','Where eggs are stored. About once a month, an ovary lets go of one egg.'],tube:['Fallopian tube','A thin tube the egg travels through toward the uterus. This is where a sperm can meet an egg.'],uterus:['Uterus','Where a baby can grow. Its soft lining leaves the body during a period.'],cervix:['Cervix','The narrow neck at the bottom of the uterus.'],vagina:['Vagina','A stretchy tube from the cervix to the outside of the body. Periods and babies leave the body this way.']}},
+m:{s:`<svg viewBox="70 40 200 220" role="img" aria-label="Side view diagram of the male reproductive system"><ellipse class="pt" data-a="part" data-v="scrotum" cx="190" cy="205" rx="36" ry="44" fill="#b9c5de" stroke="#1d2540" stroke-width="2"/><ellipse class="pt" data-a="part" data-v="testicle" cx="190" cy="208" rx="19" ry="28" fill="#7c8fc4" stroke="#1d2540" stroke-width="2"/><path class="pt" data-a="part" data-v="epi" d="M205 190 Q218 210 205 232" fill="none" stroke="#e08a3c" stroke-width="6" stroke-linecap="round"/><path class="pt" data-a="part" data-v="vas" d="M203 188 Q205 140 192 118 Q182 104 166 101" fill="none" stroke="#5a49e0" stroke-width="5" stroke-linecap="round"/><ellipse class="pt" data-a="part" data-v="bladder" cx="150" cy="80" rx="34" ry="28" fill="#9fd3d1" stroke="#1d2540" stroke-width="2"/><rect class="pt" data-a="part" data-v="penis" x="131" y="135" width="38" height="108" rx="18" transform="rotate(14 150 145)" fill="#cfd8ea" stroke="#1d2540" stroke-width="2"/><path class="pt" data-a="part" data-v="urethra" d="M150 108 L150 145 L128 236" fill="none" stroke="#1d2540" stroke-width="4" stroke-linecap="round"/></svg>`,p:{testicle:['Testicle','Makes sperm, starting in puberty.'],scrotum:['Scrotum','The pouch of skin that holds the testicles.'],epi:['Epididymis','Where sperm finish growing and wait until they are needed.'],vas:['Vas deferens','A tube that carries sperm up toward the urethra.'],bladder:['Bladder','Holds pee. It is not part of making sperm, but it sits close by.'],urethra:['Urethra','A tube inside the penis. Pee and semen both leave through it, but never at the same time.'],penis:['Penis','The outside part. It carries pee and semen out of the body.']}}};
+function an(k){const d=AN[k],on=view.pi===view.i?view.part:null,i=on&&d.p[on];return `<div class="dg">${d.s}</div><div class="chips">`+Object.keys(d.p).map(x=>`<button class="chip" data-a="part" data-v="${x}" aria-pressed="${x===on}">${d.p[x][0]}</button>`).join('')+`</div><p class="pd" role="status">${i?'<b>'+i[0]+':</b> '+i[1]:'Tap a part or a name.'}</p>`}
 const pos=a=>(a-8)/9*100;
 function tl(a){return `<p>Age <b id="tla">${a}</b></p><input id="tl" type="range" min="8" max="17" value="${a}" aria-label="Age" style="width:100%;accent-color:#fff"><div id="tlr" style="--p:${pos(a)}">`+TL.map(r=>`<div class="tr${a>=r[2]&&a<=r[3]?' on':''}" data-f="${r[2]}" data-t="${r[3]}"><span>${r[0]} <small>${r[1]}</small></span><div class="tk"><i style="left:${pos(r[2])}%;width:${pos(r[3])-pos(r[2])}%"></i></div></div>`).join('')+'</div>'}
 document.addEventListener('input',e=>{
